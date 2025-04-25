@@ -79,7 +79,6 @@ const Headers = ({ item }) => {
             <p className="text-xs text-gray-500">kadinstanton@gmail.com</p>
           </div>
         </div>
-
         {/* Dropdown Menu */}
         {menuOpen && (
           <div className="absolute top-14 right-0 bg-white border rounded-md shadow-lg w-48 z-50">

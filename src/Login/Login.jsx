@@ -1,17 +1,44 @@
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import googleIcon from './../images/google-icon.png';
-import FacebookIcon from './../images/facebook-icon.png';
+import googleIcon from "./../images/google-icon.png";
+import FacebookIcon from "./../images/facebook-icon.png";
 import xIcon from "./../images/x-icon.png";
 import linkedinIcon from "./../images/linkedinicon.png";
 
 export default function LoginPage({ setIsLoggedIn }) {
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    // Optionally add validation logic here
-    setIsLoggedIn(true);      // 🔹 Mark user as logged in
-    navigate("/");            // 🔹 Redirect to home/dashboard
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert("Please enter both email and password");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://34.10.166.233/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setIsLoggedIn(true);
+        alert("Login successful!");
+        navigate("/");
+      } else {
+        const error = await response.json();
+        alert(error.message || "Login failed");
+      }
+    } catch (error) {
+      alert("Network error: " + error.message);
+    }
   };
 
   const handleRegister = () => {
@@ -75,6 +102,8 @@ export default function LoginPage({ setIsLoggedIn }) {
           <label className="block text-xs font-semibold">Email</label>
           <input
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="enter your email"
             className="w-full mt-1 p-2 border rounded text-sm"
           />
@@ -83,6 +112,8 @@ export default function LoginPage({ setIsLoggedIn }) {
           <label className="block text-xs font-semibold">Password</label>
           <input
             type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
             className="w-full mt-1 p-2 border rounded text-sm"
           />

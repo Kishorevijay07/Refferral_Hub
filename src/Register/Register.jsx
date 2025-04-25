@@ -10,10 +10,48 @@ const RegisterForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    full_name: '',
+    phone: '',
+    role: 'user',
+  });
+
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   const handleRegister = (e) => {
     e.preventDefault();
-    // API call or validation logic here
-    navigate("/"); // Redirect to homepage after registration
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const emailExists = users.some(user => user.email === formData.email);
+    if (emailExists) {
+      alert("User with this email already exists.");
+      return;
+    }
+
+    const newUser = {
+      email: formData.email,
+      password: formData.password,
+      role: formData.role,
+      full_name: formData.full_name,
+      phone: formData.phone,
+    };
+
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Registered successfully!");
+    navigate("/loginpage");
   };
 
   const handleLoginRedirect = () => {
@@ -32,8 +70,36 @@ const RegisterForm = () => {
             <label className="label font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
+              name="email"
               required
+              value={formData.email}
+              onChange={handleChange}
               placeholder="robert.fox@myemail.com"
+              className="input input-bordered w-full h-12 text-base"
+            />
+          </div>
+
+          <div>
+            <label className="label font-medium text-gray-700 mb-1">Full Name</label>
+            <input
+              type="text"
+              name="full_name"
+              required
+              value={formData.full_name}
+              onChange={handleChange}
+              placeholder="Robert Fox"
+              className="input input-bordered w-full h-12 text-base"
+            />
+          </div>
+
+          <div>
+            <label className="label font-medium text-gray-700 mb-1">Phone</label>
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="+91 9876543210"
               className="input input-bordered w-full h-12 text-base"
             />
           </div>
@@ -43,7 +109,10 @@ const RegisterForm = () => {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
+                name="password"
                 required
+                value={formData.password}
+                onChange={handleChange}
                 placeholder="Enter password"
                 className="input input-bordered w-full h-12 text-base pr-10"
               />
@@ -62,7 +131,10 @@ const RegisterForm = () => {
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
                 required
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 placeholder="Re-enter password"
                 className="input input-bordered w-full h-12 text-base pr-10"
               />
